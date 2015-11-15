@@ -13,11 +13,12 @@
       "email": "mehmet@raccoonsoftware.net"
     }
   ],
-  "minimum-stability": "dev",
+
   "require": {},
   "autoload": {
     "psr-4": {
       "RaccoonSoftware\\NetGsm\\": "src/"
-    }
+    },
+    "minimum-stability": "dev"
   }
 }
