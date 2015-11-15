@@ -7,18 +7,19 @@
     "sms",
     "netgsm"
   ],
+  "homepage": "https://github.com/raccoonsoftware/netgsm",
   "authors": [
     {
       "name": "Mehmet Nuri Ozturk",
       "email": "mehmet@raccoonsoftware.net"
     }
   ],
-
+  "license": "BSD",
   "require": {},
   "autoload": {
-    "psr-4": {
-      "RaccoonSoftware\\NetGsm\\": "src/"
-    },
-    "minimum-stability": "dev"
-  }
+    "psr-0": {
+      "RaccoonSoftware\\NetGsm\\": "src"
+    }
+  },
+  "minimum-stability": "dev"
 }
