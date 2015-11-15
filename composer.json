@@ -20,5 +20,5 @@
       "RaccoonSoftware\\NetGsm\\": "src"
     }
   },
-  "minimum-stability": "dev"
+  "minimum-stability": "stable"
 }
