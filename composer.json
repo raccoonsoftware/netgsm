@@ -1,0 +1,23 @@
+{
+  "name": "racoonsoftware/netgsm",
+  "description": "Laravel 5.1 Net Gsm Sms service package",
+  "license": "BSD",
+  "keywords": [
+    "laravel",
+    "sms",
+    "netgsm"
+  ],
+  "authors": [
+    {
+      "name": "Mehmet Nuri Ozturk",
+      "email": "mehmet@raccoonsoftware.net"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "RaccoonSoftware\\NetGsm\\": "src/"
+    }
+  }
+}
