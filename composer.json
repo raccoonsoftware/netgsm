@@ -1,7 +1,6 @@
 {
   "name": "racoonsoftware/netgsm",
   "description": "Laravel 5.1 Net Gsm Sms service package",
-  "license": "BSD",
   "keywords": [
     "laravel",
     "sms",
