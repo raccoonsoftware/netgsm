@@ -8,3 +8,61 @@ Laravel Net GSM Package
 [![License](https://poser.pugx.org/racoonsoftware/netgsm/license)](https://packagist.org/packages/racoonsoftware/netgsm)
 
 - **AUTHOR** MEHMET NURI OZTURK mehmet@raccoonsoftware.net
+
+
+## Installation
+
+You should install this package through Composer.
+
+Edit your project's `composer.json` file to require `raccoonsoftware/netgsm`.
+
+    "require": {
+        "raccoonsoftware/netgsm": "*"
+    },
+
+Next, update Composer from the Terminal:
+    `composer update`
+
+Once this operation completes, the final step is to add the service provider.
+Open `app/config/app.php`, and add a new item to the providers array.
+
+  `'RaccoonSoftware\NetGsm\NetGsmServiceProvider::class',`
+
+And add a new item to the aliases array.
+
+  `'NetGsm' => 'RaccoonSoftware\NetGsm\Facade\NetGsm::class',`
+  
+ Give this command  
+  `php artisan vendor:publish`
+  
+  and  open config/netgsm.php file and fill necesary information.
+  
+  
+
+## Usage
+
+Option 1
+
+    use RaccoonSoftware\NetGsm\NetGsm;
+    
+    Route::get('/', function () {
+        
+        $sms = new NetGsm();
+        
+        return $sms->setGsmNumber("5xxxxxxxxxx")->setContent("Hello World!")->send();
+    });
+
+Option 2
+
+    use RaccoonSoftware\NetGsm\NetGsm;
+    
+    Route::get('/', function () {
+        
+        $sms = new NetGsm();
+        $sms->setGsmNumber("5xxxxxxxxx");
+        $sms->setContent("Hello New World");
+        
+        return $sms->send();
+    });
+
+  

@@ -26,8 +26,8 @@ class NetGsm
     {
         $this->parseConfig();
         $this->responseCode = "other";
-        $this->gsmNumber="";
-        $this->content="";
+        $this->gsmNumber = "";
+        $this->content = "";
     }
 
     /**
@@ -36,6 +36,7 @@ class NetGsm
     public function setApiUrl($api_url)
     {
         $this->api_url = $api_url;
+        return $this;
     }
 
     /**
@@ -44,6 +45,7 @@ class NetGsm
     public function setUsername($username)
     {
         $this->username = $username;
+        return $this;
     }
 
     /**
@@ -78,9 +80,9 @@ class NetGsm
      */
     public function setGsmNumber($gsmNumber)
     {
-        if (substr($this->gsmNumber,0,1) == "0"){
-            $this->gsmNumber = substr($this->gsmNumber,1);
-        }else {
+        if (substr($gsmNumber, 0, 1) == "0") {
+            $this->gsmNumber = substr($gsmNumber, 1);
+        } else {
             $this->gsmNumber = $gsmNumber;
         }
         return $this;
@@ -121,9 +123,16 @@ class NetGsm
         $this->header = config('netgsm.header');
     }
 
-    public function checkVariable(){
+    public function checkVariable()
+    {
         if ($this->gsmNumber == "" or $this->content == "") {
-            return false;
+            if ($this->gsmNumber == "") {
+                return trans('netgsm::messages.444');
+            }
+            if ($this->content == "") {
+                return trans('netgsm::messages.443');
+            }
+
         } else {
             return true;
         }
@@ -131,11 +140,10 @@ class NetGsm
 
     public function send()
     {
-        if (!$this->checkVariable()){
-            return trans('netgsm::messages.other');
-        }
+        if ($this->checkVariable()) {
 
-        $message = '<?xml version="1.0" encoding="iso-8859-9"?>
+
+            $message = '<?xml version="1.0" encoding="iso-8859-9"?>
                         <mainbody>
                             <header>
                                 <company>NETGSM</company>
@@ -152,14 +160,15 @@ class NetGsm
                             </body>
                         </mainbody>';
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->api_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: text/xml"]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
-        $this->responseCode = curl_exec($ch);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $this->api_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: text/xml"]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
+            $this->responseCode = curl_exec($ch);
 
-        return $this->checkResult();
+            return $this->checkResult();
+        }
     }
 
 }
