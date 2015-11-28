@@ -1,83 +1,165 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: mehmet
+ * Date: 15.11.2015
+ * Time: 02:44
+ */
+
+namespace RaccoonSoftware\NetGsm;
+
+
+class NetGsm
+{
+    private $responseCode;
+    private $api_url;
+    private $username;
+    private $password;
+    private $header;
+    private $content;
+    private $gsmNumber;
+
     /**
-     * Created by PhpStorm.
-     * User: mehmet
-     * Date: 15.11.2015
-     * Time: 02:44
+     * NetGsm constructor.
      */
-
-    namespace RaccoonSoftware\NetGsm;
-
-
-    class NetGsm
+    public function __construct()
     {
-        private static function resultCode($code)
-        {
-            $result = explode(" ", $code);
+        $this->parseConfig();
+        $this->responseCode = "other";
+        $this->gsmNumber="";
+        $this->content="";
+    }
 
-            switch ($result[0]) {
+    /**
+     * @param mixed $api_url
+     */
+    public function setApiUrl($api_url)
+    {
+        $this->api_url = $api_url;
+    }
 
-                case 00:
-                    return trans('netgsm::messages.0');
-                    break;
+    /**
+     * @param mixed $username
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
 
-                case 30:
-                    return trans('netgsm::messages.30');
-                    break;
+    /**
+     * @param mixed $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+        return $this;
+    }
 
-                case 70:
-                    return trans('netgsm::messages.70');
-                    break;
+    /**
+     * @param mixed $header
+     */
+    public function setHeader($header)
+    {
+        $this->header = $header;
+        return $this;
+    }
 
-                case 100:
-                    return trans('netgsm::messages.100');
-                    break;
+    /**
+     * @param mixed $content
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+        return $this;
+    }
 
-                case 101:
-                    return trans('netgsm::messages.100');
-                    break;
-                default:
-                    return trans('netgsm::messages.other');
-                    break;
-            }
+    /**
+     * @param mixed $gsmNumber
+     */
+    public function setGsmNumber($gsmNumber)
+    {
+        if (substr($this->gsmNumber,0,1) == "0"){
+            $this->gsmNumber = substr($this->gsmNumber,1);
+        }else {
+            $this->gsmNumber = $gsmNumber;
+        }
+        return $this;
+    }
+
+    private function checkResult()
+    {
+        $result = explode(" ", $this->responseCode);
+
+        switch ($result[0]) {
+
+            case 00:
+                return trans('netgsm::messages.0');
+
+            case 30:
+                return trans('netgsm::messages.30');
+
+            case 70:
+                return trans('netgsm::messages.70');
+
+            case 100:
+                return trans('netgsm::messages.100');
+
+            case 101:
+                return trans('netgsm::messages.100');
+
+            default:
+                return trans('netgsm::messages.other');
+
+        }
+    }
+
+    public function parseConfig()
+    {
+        $this->api_url = config('netgsm.apiUrl');
+        $this->username = config('netgsm.username');
+        $this->password = config('netgsm.password');
+        $this->header = config('netgsm.header');
+    }
+
+    public function checkVariable(){
+        if ($this->gsmNumber == "" or $this->content == "") {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function send()
+    {
+        if (!$this->checkVariable()){
+            return trans('netgsm::messages.other');
         }
 
-        public static function send($number, $content)
-        {
-            $api_url = config('netgsm.apiUrl');
-            $username = config('netgsm.username');
-            $password = config('netgsm.password');
-            $header = config('netgsm.header');
-
-            $message = '<?xml version="1.0" encoding="iso-8859-9"?>
+        $message = '<?xml version="1.0" encoding="iso-8859-9"?>
                         <mainbody>
                             <header>
                                 <company>NETGSM</company>
-                                <usercode>' . $username . '</usercode>
-                                <password>' . $password . '</password>
+                                <usercode>' . $this->username . '</usercode>
+                                <password>' . $this->password . '</password>
                                 <startdate></startdate>
                                 <stopdate></stopdate>
                                 <type>1:n</type>
-                                <msgheader>' . $header . '</msgheader>
-                                </header>
-                                <body>
-                                <msg><![CDATA[' . $content . ']]></msg>
-                                <no>90' . $number . '</no>
-                                </body>
+                                <msgheader>' . $this->header . '</msgheader>
+                            </header>
+                            <body>
+                                <msg><![CDATA[' . $this->content . ']]></msg>
+                                <no>90' . $this->gsmNumber . '</no>
+                            </body>
                         </mainbody>';
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $api_url);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->api_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: text/xml"]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
+        $this->responseCode = curl_exec($ch);
 
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: text/xml"]);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
-            $result = curl_exec($ch);
-
-
-            return self::resultCode($result);
-
-
-        }
-
+        return $this->checkResult();
     }
+
+}
